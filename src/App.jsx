@@ -1,32 +1,47 @@
-import { useState } from "react"
-import FestivalForm from "./components/FestivalForm"
-import Dashboard from "./components/Dashboard"
-import { calculateFestivalMetrics } from "./utils/calculations"
+import { BrowserRouter, Routes, Route } from "react-router-dom"
+
+import Login from "./pages/Login"
+import Register from "./pages/Register"
+import Builder from "./pages/Builder"
+import SavedFestivals from "./pages/SavedFestivals"
+import CompareFestivals from "./pages/CompareFestivals"
+import ProtectedRoute from "./components/ProtectedRoute"
 
 function App() {
-  const [metrics, setMetrics] = useState(null)
-
-  const handleCalculate = (festival) => {
-    const results =
-      calculateFestivalMetrics(festival)
-
-    setMetrics(results)
-  }
-
   return (
-    <div className="min-h-screen p-10 bg-slate-900">
-      <h1 className="text-4xl font-bold mb-8">
-        Festival Simulator
-      </h1>
+    <BrowserRouter>
+      <Routes>
+        <Route path="/" element={<Login />} />
+        <Route path="/register" element={<Register />} />
 
-      <div className="grid md:grid-cols-2 gap-8">
-        <FestivalForm
-          onCalculate={handleCalculate}
+        <Route
+          path="/builder"
+          element={
+            <ProtectedRoute>
+              <Builder />
+            </ProtectedRoute>
+          }
         />
 
-        <Dashboard metrics={metrics} />
-      </div>
-    </div>
+        <Route
+          path="/saved"
+          element={
+            <ProtectedRoute>
+              <SavedFestivals />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/compare"
+          element={
+            <ProtectedRoute>
+              <CompareFestivals />
+            </ProtectedRoute>
+          }
+        />
+      </Routes>
+    </BrowserRouter>
   )
 }
 
