@@ -54,7 +54,7 @@ function Dashboard({ metrics }) {
 
           <button
             onClick={() => exportAsCSV(metrics)}
-            className="bg-emerald-600 hover:bg-emerald-700 px-4 py-2 rounded font-bold"
+            className="bg-emerald-600 hover:bg-emerald-700 px-4 py-2 rounded font-bold cursor-pointer"
           >
             Export CSV
           </button>
