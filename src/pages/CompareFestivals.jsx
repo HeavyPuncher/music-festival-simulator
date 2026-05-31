@@ -8,7 +8,10 @@ import {
   Tooltip,
   ResponsiveContainer,
 } from "recharts"
-
+import {
+  exportFestivalAsJSON,
+  exportFestivalAsCSV,
+} from "../utils/exportUtils"
 import { getCurrentUser } from "../utils/auth"
 
 function CompareFestivals() {
@@ -73,12 +76,17 @@ function CompareFestivals() {
     const isSelected = selectedFestival?.id === item.id
 
     return (
-      <button
-        type="button"
+      <div
         onClick={() => setSelectedFestival(item)}
-        className={`text-left bg-slate-900 border p-6 rounded-2xl transition hover:bg-slate-800 ${
-          isSelected ? "border-blue-500" : "border-slate-700"
-        }`}
+        role="button"
+        tabIndex={0}
+        onKeyDown={(e) => {
+          if (e.key === "Enter" || e.key === " ") {
+            setSelectedFestival(item)
+          }
+        }}
+        className={`text-left bg-slate-900 border p-6 rounded-2xl transition hover:bg-slate-800 cursor-pointer ${isSelected ? "border-blue-500" : "border-slate-700"
+          }`}
       >
         <h2 className="text-2xl font-bold mb-4">{item.festival.name}</h2>
 
@@ -124,10 +132,34 @@ function CompareFestivals() {
           </p>
         </div>
 
+        <div className="flex flex-wrap gap-2 mt-4">
+          <button
+            type="button"
+            onClick={(e) => {
+              e.stopPropagation()
+              exportFestivalAsJSON(item)
+            }}
+            className="bg-indigo-600 hover:bg-indigo-700 px-3 py-2 rounded text-sm font-bold cursor-pointer"
+          >
+            Export JSON
+          </button>
+
+          <button
+            type="button"
+            onClick={(e) => {
+              e.stopPropagation()
+              exportFestivalAsCSV(item)
+            }}
+            className="bg-emerald-600 hover:bg-emerald-700 px-3 py-2 rounded text-sm font-bold cursor-pointer"
+          >
+            Export CSV
+          </button>
+        </div>
+
         <p className="mt-4 text-sm text-slate-400">
           Click to view chart below
         </p>
-      </button>
+      </div>
     )
   }
 

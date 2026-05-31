@@ -47,7 +47,7 @@ function Dashboard({ metrics }) {
         <div className="flex gap-2">
           <button
             onClick={() => exportAsJSON(metrics)}
-            className="bg-indigo-600 hover:bg-indigo-700 px-4 py-2 rounded font-bold"
+            className="bg-indigo-600 hover:bg-indigo-700 px-4 py-2 rounded font-bold cursor-pointer"
           >
             Export JSON
           </button>

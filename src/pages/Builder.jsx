@@ -80,7 +80,7 @@ function Builder() {
 
             <button
               onClick={handleLogout}
-              className="bg-red-600 hover:bg-red-700 px-5 py-3 rounded font-bold"
+              className="bg-red-600 hover:bg-red-700 px-5 py-3 rounded font-bold cursor-pointer"
             >
               Logout
             </button>

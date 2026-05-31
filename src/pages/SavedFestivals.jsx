@@ -1,6 +1,10 @@
 import { useEffect, useState } from "react"
 import { Link } from "react-router-dom"
 import { getCurrentUser } from "../utils/auth"
+import {
+  exportFestivalAsJSON,
+  exportFestivalAsCSV,
+} from "../utils/exportUtils"
 
 function SavedFestivals() {
   const user = getCurrentUser()
@@ -116,14 +120,14 @@ function SavedFestivals() {
             <div className="flex flex-wrap gap-3">
               <button
                 onClick={selectAll}
-                className="bg-slate-700 hover:bg-slate-600 px-4 py-2 rounded font-bold"
+                className="bg-slate-700 hover:bg-slate-600 px-4 py-2 rounded font-bold cursor-pointer"
               >
                 Select All
               </button>
 
               <button
                 onClick={clearSelection}
-                className="bg-slate-700 hover:bg-slate-600 px-4 py-2 rounded font-bold"
+                className="bg-slate-700 hover:bg-slate-600 px-4 py-2 rounded font-bold cursor-pointer"
               >
                 Clear Selection
               </button>
@@ -131,14 +135,14 @@ function SavedFestivals() {
               <button
                 onClick={deleteSelected}
                 disabled={selectedIds.length === 0}
-                className="bg-red-600 hover:bg-red-700 disabled:opacity-40 px-4 py-2 rounded font-bold"
+                className="bg-red-600 hover:bg-red-700 disabled:opacity-40 px-4 py-2 rounded font-bold cursor-pointer disabled:cursor-not-allowed"
               >
                 Delete Selected
               </button>
 
               <button
                 onClick={deleteAll}
-                className="bg-red-800 hover:bg-red-900 px-4 py-2 rounded font-bold"
+                className="bg-red-800 hover:bg-red-900 px-4 py-2 rounded font-bold cursor-pointer"
               >
                 Delete All
               </button>
@@ -158,9 +162,8 @@ function SavedFestivals() {
               return (
                 <div
                   key={item.id}
-                  className={`bg-slate-900 border p-6 rounded-2xl ${
-                    isSelected ? "border-blue-500" : "border-slate-700"
-                  }`}
+                  className={`bg-slate-900 border p-6 rounded-2xl ${isSelected ? "border-blue-500" : "border-slate-700"
+                    }`}
                 >
                   <div className="flex items-start gap-3 mb-4">
                     <input
@@ -219,12 +222,28 @@ function SavedFestivals() {
                     </p>
                   </div>
 
-                  <button
-                    onClick={() => deleteFestival(item.id)}
-                    className="mt-5 bg-red-600 hover:bg-red-700 px-4 py-2 rounded font-bold"
-                  >
-                    Delete This
-                  </button>
+                  <div className="flex flex-wrap gap-2 mt-5">
+                    <button
+                      onClick={() => exportFestivalAsJSON(item)}
+                      className="bg-indigo-600 hover:bg-indigo-700 px-4 py-2 rounded font-bold cursor-pointer"
+                    >
+                      Export JSON
+                    </button>
+
+                    <button
+                      onClick={() => exportFestivalAsCSV(item)}
+                      className="bg-emerald-600 hover:bg-emerald-700 px-4 py-2 rounded font-bold cursor-pointer"
+                    >
+                      Export CSV
+                    </button>
+
+                    <button
+                      onClick={() => deleteFestival(item.id)}
+                      className="bg-red-600 hover:bg-red-700 px-4 py-2 rounded font-bold cursor-pointer"
+                    >
+                      Delete This
+                    </button>
+                  </div>
                 </div>
               )
             })}

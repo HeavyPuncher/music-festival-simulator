@@ -4,6 +4,7 @@ export function exportAsJSON(data, fileName = "festival-forecast.json") {
   })
 
   const url = URL.createObjectURL(blob)
+
   const link = document.createElement("a")
 
   link.href = url
@@ -38,10 +39,50 @@ export function exportAsCSV(data, fileName = "festival-forecast.csv") {
   })
 
   const url = URL.createObjectURL(blob)
+
   const link = document.createElement("a")
 
   link.href = url
   link.download = fileName
+  link.click()
+
+  URL.revokeObjectURL(url)
+}
+
+export function exportFestivalAsJSON(festival) {
+  exportAsJSON(
+    festival,
+    `${festival.festival.name.replace(/\s+/g, "-")}.json`
+  )
+}
+
+export function exportFestivalAsCSV(festival) {
+  const rows = [
+    ["Metric", "Value"],
+    ["Festival", festival.festival.name],
+    ["Artist", festival.metrics.artistName],
+    ["Stage", festival.metrics.stageName],
+    ["Revenue", festival.metrics.totalRevenue],
+    ["Expenses", festival.metrics.totalExpenses],
+    ["Profit", festival.metrics.profit],
+    ["Attendance", festival.metrics.adjustedAttendance],
+    ["Energy Cost", festival.metrics.energyCost],
+    ["Crowd Risk", festival.metrics.crowdRisk],
+  ]
+
+  const csvContent = rows.map((row) => row.join(",")).join("\n")
+
+  const blob = new Blob([csvContent], {
+    type: "text/csv",
+  })
+
+  const url = URL.createObjectURL(blob)
+
+  const link = document.createElement("a")
+
+  link.href = url
+  link.download = `${festival.festival.name.replace(/\s+/g, "-")}.csv`
+
   link.click()
 
   URL.revokeObjectURL(url)

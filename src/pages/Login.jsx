@@ -57,7 +57,7 @@ function Login() {
           required
         />
 
-        <button className="w-full bg-blue-600 hover:bg-blue-700 p-3 rounded font-bold">
+        <button className="w-full bg-blue-600 hover:bg-blue-700 p-3 rounded font-bold cursor-pointer">
           Login
         </button>
 

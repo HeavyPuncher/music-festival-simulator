@@ -79,7 +79,7 @@ function Register() {
           required
         />
 
-        <button className="w-full bg-green-600 hover:bg-green-700 p-3 rounded font-bold">
+        <button className="w-full bg-green-600 hover:bg-green-700 p-3 rounded font-bold cursor-pointer">
           Register
         </button>
 

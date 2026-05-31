@@ -263,14 +263,14 @@ function FestivalForm({ onCalculate, onSave, onClear }) {
       </div>
 
       <div className="flex flex-col md:flex-row gap-3">
-        <button className="bg-blue-600 hover:bg-blue-700 px-5 py-3 rounded font-bold">
+        <button className="bg-blue-600 hover:bg-blue-700 px-5 py-3 rounded font-bold cursor-pointer">
           Simulate Festival
         </button>
 
         <button
           type="button"
           onClick={() => onSave(festival)}
-          className="bg-purple-600 hover:bg-purple-700 px-5 py-3 rounded font-bold"
+          className="bg-purple-600 hover:bg-purple-700 px-5 py-3 rounded font-bold cursor-pointer"
         >
           Save Setup
         </button>
@@ -278,7 +278,7 @@ function FestivalForm({ onCalculate, onSave, onClear }) {
         <button
           type="button"
           onClick={handleClear}
-          className="bg-slate-700 hover:bg-slate-600 px-5 py-3 rounded font-bold"
+          className="bg-slate-700 hover:bg-slate-600 px-5 py-3 rounded font-bold cursor-pointer"
         >
           Clear Builder
         </button>
