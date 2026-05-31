@@ -4,6 +4,10 @@ export function calculateFestivalMetrics(festival) {
   const artist = artists.find((a) => a.id === Number(festival.artistId))
   const stage = stages.find((s) => s.id === Number(festival.stageId))
 
+  if (!artist || !stage) {
+    throw new Error("Invalid artist or stage selected")
+  }
+
   const attendance = Number(festival.attendance) || 0
   const ticketPrice = Number(festival.ticketPrice) || 0
   const days = Number(festival.days) || 1
@@ -56,6 +60,7 @@ export function calculateFestivalMetrics(festival) {
 
   return {
     artistName: artist.name,
+    artistType: artist.typeId,
     stageName: stage.name,
     adjustedAttendance,
     ticketRevenue,

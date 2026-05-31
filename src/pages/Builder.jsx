@@ -16,6 +16,7 @@ function Builder() {
   const handleCalculate = (festival) => {
     const results = calculateFestivalMetrics(festival)
     setMetrics(results)
+    setSavedMessage("")
   }
 
   const handleSave = (festival) => {
@@ -38,6 +39,11 @@ function Builder() {
 
     setSavedMessage("Festival setup saved successfully")
     setMetrics(results)
+  }
+
+  const handleClear = () => {
+    setMetrics(null)
+    setSavedMessage("")
   }
 
   const handleLogout = () => {
@@ -88,7 +94,12 @@ function Builder() {
         )}
 
         <div className="grid lg:grid-cols-2 gap-6">
-          <FestivalForm onCalculate={handleCalculate} onSave={handleSave} />
+          <FestivalForm
+            onCalculate={handleCalculate}
+            onSave={handleSave}
+            onClear={handleClear}
+          />
+
           <Dashboard metrics={metrics} />
         </div>
       </div>

@@ -5,6 +5,7 @@ import {
   YAxis,
   Tooltip,
   ResponsiveContainer,
+  CartesianGrid,
 } from "recharts"
 
 import { exportAsCSV, exportAsJSON } from "../utils/exportUtils"
@@ -25,24 +26,22 @@ function Dashboard({ metrics }) {
     return `£${Math.round(value).toLocaleString()}`
   }
 
+  const formatCompact = (value) => {
+    return Intl.NumberFormat("en-GB", {
+      notation: "compact",
+      maximumFractionDigits: 1,
+    }).format(value)
+  }
+
   const chartData = [
-    {
-      name: "Revenue",
-      value: Math.round(metrics.totalRevenue),
-    },
-    {
-      name: "Expenses",
-      value: Math.round(metrics.totalExpenses),
-    },
-    {
-      name: "Profit",
-      value: Math.round(metrics.profit),
-    },
+    { name: "Revenue", value: Math.round(metrics.totalRevenue) },
+    { name: "Expenses", value: Math.round(metrics.totalExpenses) },
+    { name: "Profit", value: Math.round(metrics.profit) },
   ]
 
   return (
     <div className="bg-slate-900 border border-slate-700 p-6 rounded-2xl space-y-5">
-      <div className="flex items-center justify-between gap-4">
+      <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
         <h2 className="text-2xl font-bold">Forecast Dashboard</h2>
 
         <div className="flex gap-2">
@@ -97,14 +96,43 @@ function Dashboard({ metrics }) {
       </div>
 
       <div className="bg-slate-800 p-4 rounded-xl h-72">
-        <h3 className="font-bold mb-4">Financial Overview</h3>
+        <h3 className="font-bold mb-2">Financial Overview</h3>
 
-        <ResponsiveContainer width="100%" height="85%">
-          <BarChart data={chartData}>
-            <XAxis dataKey="name" stroke="#cbd5e1" />
-            <YAxis stroke="#cbd5e1" />
-            <Tooltip />
-            <Bar dataKey="value" />
+        <ResponsiveContainer width="100%" height="88%">
+          <BarChart
+            data={chartData}
+            layout="vertical"
+            barCategoryGap="20%"
+            margin={{
+              top: 5,
+              right: 25,
+              left: 25,
+              bottom: 5,
+            }}
+          >
+            <CartesianGrid strokeDasharray="3 3" opacity={0.15} />
+
+            <XAxis
+              type="number"
+              tickFormatter={formatCompact}
+              stroke="#cbd5e1"
+              tickMargin={8}
+            />
+
+            <YAxis
+              type="category"
+              dataKey="name"
+              width={75}
+              stroke="#cbd5e1"
+              tickMargin={6}
+            />
+
+            <Tooltip
+              formatter={(value) => formatMoney(value)}
+              labelStyle={{ color: "#020617" }}
+            />
+
+            <Bar dataKey="value" radius={[0, 8, 8, 0]} />
           </BarChart>
         </ResponsiveContainer>
       </div>

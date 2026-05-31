@@ -1,26 +1,46 @@
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import {
+  artistTypes,
   artists,
   stages,
   weatherOptions,
   locationOptions,
 } from "../data/festivalOptions"
 
-function FestivalForm({ onCalculate, onSave }) {
-  const [festival, setFestival] = useState({
-    name: "",
-    location: "Field",
-    attendance: 10000,
-    ticketPrice: 100,
-    days: 1,
-    weather: "Sunny",
-    artistId: 1,
-    stageId: 1,
-    toilets: 100,
-    securityStaff: 40,
-    medicalStaff: 5,
-    foodVendors: 10,
+const defaultFestival = {
+  name: "",
+  location: "Field",
+  attendance: 10000,
+  ticketPrice: 100,
+  days: 1,
+  weather: "Sunny",
+  artistTypeId: "headline",
+  artistId: 1,
+  stageId: 1,
+  toilets: 100,
+  securityStaff: 40,
+  medicalStaff: 5,
+  foodVendors: 10,
+}
+
+function FestivalForm({ onCalculate, onSave, onClear }) {
+  const [festival, setFestival] = useState(() => {
+    const savedDraft = localStorage.getItem("festivalDraft")
+
+    if (savedDraft) {
+      return JSON.parse(savedDraft)
+    }
+
+    return defaultFestival
   })
+
+  useEffect(() => {
+    localStorage.setItem("festivalDraft", JSON.stringify(festival))
+  }, [festival])
+
+  const filteredArtists = artists.filter(
+    (artist) => artist.typeId === festival.artistTypeId
+  )
 
   const handleChange = (e) => {
     setFestival({
@@ -29,9 +49,32 @@ function FestivalForm({ onCalculate, onSave }) {
     })
   }
 
+  const handleArtistTypeChange = (e) => {
+    const selectedType = e.target.value
+
+    const firstArtistOfType = artists.find(
+      (artist) => artist.typeId === selectedType
+    )
+
+    setFestival({
+      ...festival,
+      artistTypeId: selectedType,
+      artistId: firstArtistOfType.id,
+    })
+  }
+
   const handleSubmit = (e) => {
     e.preventDefault()
     onCalculate(festival)
+  }
+
+  const handleClear = () => {
+    setFestival(defaultFestival)
+    localStorage.removeItem("festivalDraft")
+
+    if (onClear) {
+      onClear()
+    }
   }
 
   return (
@@ -73,6 +116,7 @@ function FestivalForm({ onCalculate, onSave }) {
           <input
             name="attendance"
             type="number"
+            min="0"
             value={festival.attendance}
             onChange={handleChange}
             className="w-full p-3 rounded bg-slate-800 border border-slate-700"
@@ -84,6 +128,7 @@ function FestivalForm({ onCalculate, onSave }) {
           <input
             name="ticketPrice"
             type="number"
+            min="0"
             value={festival.ticketPrice}
             onChange={handleChange}
             className="w-full p-3 rounded bg-slate-800 border border-slate-700"
@@ -95,6 +140,7 @@ function FestivalForm({ onCalculate, onSave }) {
           <input
             name="days"
             type="number"
+            min="1"
             value={festival.days}
             onChange={handleChange}
             className="w-full p-3 rounded bg-slate-800 border border-slate-700"
@@ -116,20 +162,38 @@ function FestivalForm({ onCalculate, onSave }) {
         </select>
       </div>
 
-      <div>
-        <label className="block mb-2">Artist</label>
-        <select
-          name="artistId"
-          value={festival.artistId}
-          onChange={handleChange}
-          className="w-full p-3 rounded bg-slate-800 border border-slate-700"
-        >
-          {artists.map((artist) => (
-            <option key={artist.id} value={artist.id}>
-              {artist.name} - £{artist.cost.toLocaleString()}
-            </option>
-          ))}
-        </select>
+      <div className="grid md:grid-cols-2 gap-4">
+        <div>
+          <label className="block mb-2">Artist Type</label>
+          <select
+            name="artistTypeId"
+            value={festival.artistTypeId}
+            onChange={handleArtistTypeChange}
+            className="w-full p-3 rounded bg-slate-800 border border-slate-700"
+          >
+            {artistTypes.map((type) => (
+              <option key={type.id} value={type.id}>
+                {type.name}
+              </option>
+            ))}
+          </select>
+        </div>
+
+        <div>
+          <label className="block mb-2">Artist</label>
+          <select
+            name="artistId"
+            value={festival.artistId}
+            onChange={handleChange}
+            className="w-full p-3 rounded bg-slate-800 border border-slate-700"
+          >
+            {filteredArtists.map((artist) => (
+              <option key={artist.id} value={artist.id}>
+                {artist.name} - £{artist.cost.toLocaleString()}
+              </option>
+            ))}
+          </select>
+        </div>
       </div>
 
       <div>
@@ -154,6 +218,7 @@ function FestivalForm({ onCalculate, onSave }) {
           <input
             name="toilets"
             type="number"
+            min="0"
             value={festival.toilets}
             onChange={handleChange}
             className="w-full p-3 rounded bg-slate-800 border border-slate-700"
@@ -165,6 +230,7 @@ function FestivalForm({ onCalculate, onSave }) {
           <input
             name="securityStaff"
             type="number"
+            min="0"
             value={festival.securityStaff}
             onChange={handleChange}
             className="w-full p-3 rounded bg-slate-800 border border-slate-700"
@@ -176,6 +242,7 @@ function FestivalForm({ onCalculate, onSave }) {
           <input
             name="medicalStaff"
             type="number"
+            min="0"
             value={festival.medicalStaff}
             onChange={handleChange}
             className="w-full p-3 rounded bg-slate-800 border border-slate-700"
@@ -187,6 +254,7 @@ function FestivalForm({ onCalculate, onSave }) {
           <input
             name="foodVendors"
             type="number"
+            min="0"
             value={festival.foodVendors}
             onChange={handleChange}
             className="w-full p-3 rounded bg-slate-800 border border-slate-700"
@@ -194,7 +262,7 @@ function FestivalForm({ onCalculate, onSave }) {
         </div>
       </div>
 
-      <div className="flex gap-3">
+      <div className="flex flex-col md:flex-row gap-3">
         <button className="bg-blue-600 hover:bg-blue-700 px-5 py-3 rounded font-bold">
           Simulate Festival
         </button>
@@ -205,6 +273,14 @@ function FestivalForm({ onCalculate, onSave }) {
           className="bg-purple-600 hover:bg-purple-700 px-5 py-3 rounded font-bold"
         >
           Save Setup
+        </button>
+
+        <button
+          type="button"
+          onClick={handleClear}
+          className="bg-slate-700 hover:bg-slate-600 px-5 py-3 rounded font-bold"
+        >
+          Clear Builder
         </button>
       </div>
     </form>

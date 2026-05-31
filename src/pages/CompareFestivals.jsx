@@ -1,5 +1,14 @@
 import { useEffect, useState } from "react"
 import { Link } from "react-router-dom"
+import {
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  Tooltip,
+  ResponsiveContainer,
+} from "recharts"
+
 import { getCurrentUser } from "../utils/auth"
 
 function CompareFestivals() {
@@ -8,13 +17,12 @@ function CompareFestivals() {
   const [savedFestivals, setSavedFestivals] = useState([])
   const [firstId, setFirstId] = useState("")
   const [secondId, setSecondId] = useState("")
+  const [selectedFestival, setSelectedFestival] = useState(null)
 
   useEffect(() => {
     const allSaved = JSON.parse(localStorage.getItem("savedFestivals")) || []
 
-    const userSaved = allSaved.filter(
-      (item) => item.userEmail === user.email
-    )
+    const userSaved = allSaved.filter((item) => item.userEmail === user.email)
 
     setSavedFestivals(userSaved)
 
@@ -29,11 +37,49 @@ function CompareFestivals() {
     return `£${Math.round(value).toLocaleString()}`
   }
 
+  const formatCompact = (value) => {
+    return Intl.NumberFormat("en-GB", {
+      notation: "compact",
+      maximumFractionDigits: 1,
+    }).format(value)
+  }
+
+  const getChartData = (item) => {
+    if (!item) return []
+
+    return [
+      {
+        name: "Revenue",
+        value: Math.round(item.metrics.totalRevenue),
+      },
+      {
+        name: "Expenses",
+        value: Math.round(item.metrics.totalExpenses),
+      },
+      {
+        name: "Profit",
+        value: Math.round(item.metrics.profit),
+      },
+      {
+        name: "Energy",
+        value: Math.round(item.metrics.energyCost),
+      },
+    ]
+  }
+
   const renderFestivalCard = (item) => {
     if (!item) return null
 
+    const isSelected = selectedFestival?.id === item.id
+
     return (
-      <div className="bg-slate-900 border border-slate-700 p-6 rounded-2xl">
+      <button
+        type="button"
+        onClick={() => setSelectedFestival(item)}
+        className={`text-left bg-slate-900 border p-6 rounded-2xl transition hover:bg-slate-800 ${
+          isSelected ? "border-blue-500" : "border-slate-700"
+        }`}
+      >
         <h2 className="text-2xl font-bold mb-4">{item.festival.name}</h2>
 
         <div className="space-y-2">
@@ -77,7 +123,11 @@ function CompareFestivals() {
             <strong>Risk:</strong> {item.metrics.crowdRisk}
           </p>
         </div>
-      </div>
+
+        <p className="mt-4 text-sm text-slate-400">
+          Click to view chart below
+        </p>
+      </button>
     )
   }
 
@@ -142,6 +192,53 @@ function CompareFestivals() {
               {renderFestivalCard(firstFestival)}
               {renderFestivalCard(secondFestival)}
             </div>
+
+            {selectedFestival && (
+              <div className="mt-8 bg-slate-900 border border-slate-700 p-6 rounded-2xl">
+                <h2 className="text-2xl font-bold mb-2">
+                  {selectedFestival.festival.name} Chart
+                </h2>
+
+                <p className="text-slate-400 mb-6">
+                  Financial breakdown for the selected festival.
+                </p>
+
+                <div className="h-80">
+                  <ResponsiveContainer width="100%" height="100%">
+                    <BarChart
+                      data={getChartData(selectedFestival)}
+                      layout="vertical"
+                      margin={{
+                        top: 10,
+                        right: 40,
+                        left: 80,
+                        bottom: 20,
+                      }}
+                    >
+                      <XAxis
+                        type="number"
+                        tickFormatter={formatCompact}
+                        stroke="#cbd5e1"
+                      />
+
+                      <YAxis
+                        type="category"
+                        dataKey="name"
+                        width={90}
+                        stroke="#cbd5e1"
+                      />
+
+                      <Tooltip
+                        formatter={(value) => formatMoney(value)}
+                        labelStyle={{ color: "#020617" }}
+                      />
+
+                      <Bar dataKey="value" />
+                    </BarChart>
+                  </ResponsiveContainer>
+                </div>
+              </div>
+            )}
           </>
         )}
       </div>
